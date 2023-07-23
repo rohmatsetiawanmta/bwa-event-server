@@ -18,7 +18,7 @@ const createCategories = async (req) => {
 const getOneCategories = async (req) => {
   const { id } = req.params;
   const result = await Categories.findOne({ _id: id });
-  if (!result) throw new NotFoundError();
+  if (!result) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
 
   return result;
 };
