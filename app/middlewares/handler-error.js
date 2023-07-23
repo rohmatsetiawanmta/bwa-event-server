@@ -1,4 +1,4 @@
-const { StatusCodes } = require('http-status-code');
+const { StatusCodes } = require('http-status-codes');
 const errorHandlerMiddleware = (err, req, res, next) => {
   let customError = {
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
@@ -18,7 +18,7 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     customError.statusCode = 400;
   }
 
-  if (err.name === 'Cast Error') {
+  if (err.name === 'CastError') {
     customError.msg = `No item found with id ${err.value}`;
     customError.statusCode = 404;
   }
