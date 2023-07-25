@@ -27,11 +27,13 @@ const updateCategories = async (req) => {
   const { id } = req.params;
   const { name } = req.body;
 
+  const checkCategories = await Categories.findOne({ _id: id });
+  if (!checkCategories) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
+
   const check = await Categories.findOne({ name, _id: { $ne: id } });
   if (check) throw new BadRequestError('Kategori sudah ada');
 
   const result = await Categories.findOneAndUpdate({ _id: id }, { name }, { new: true, runValidators: true });
-  if (!result) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
 
   return result;
 };
@@ -46,4 +48,10 @@ const deleteCategories = async (req) => {
   return result;
 };
 
-module.exports = { getAllCategories, createCategories, getOneCategories, updateCategories, deleteCategories };
+const checkingCategories = async (id) => {
+  const result = await Categories.findOne({ _id: id });
+  if (!result) throw new NotFoundError(`Tidak ada kategori dengan id ${id}`);
+  return result;
+};
+
+module.exports = { getAllCategories, createCategories, getOneCategories, updateCategories, deleteCategories, checkingCategories };

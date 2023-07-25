@@ -1,5 +1,5 @@
 const Talents = require('../../api/v1/talents/model');
-const { checkingImage } = require('./images');
+const { checkingImages } = require('./images');
 const { NotFoundError, BadRequestError } = require('../../errors');
 
 const getAllTalents = async (req) => {
@@ -16,7 +16,7 @@ const getAllTalents = async (req) => {
 
 const createTalents = async (req) => {
   const { name, role, image } = req.body;
-  await checkingImage(image);
+  await checkingImages(image);
 
   const check = await Talents.findOne({ name });
   if (check) throw new BadRequestError('Nama pengisi acara sudah ada');
@@ -36,13 +36,15 @@ const getOneTalents = async (req) => {
 const updateTalents = async (req) => {
   const { id } = req.params;
   const { name, role, image } = req.body;
-  await checkingImage(image);
+  await checkingImages(image);
+
+  const checkTalents = await Talents.findOne({ _id: id });
+  if (!checkTalents) throw new NotFoundError(`Tidak ada pengisi acara dengan ID ${id}`);
 
   const check = await Talents.findOne({ name, _id: { $ne: id } });
   if (check) throw new BadRequestError('Nama pengisi acara sudah ada');
 
   const result = await Talents.findOneAndUpdate({ _id: id }, { name, image, role }, { new: true, runValidators: true });
-  if (!result) throw new NotFoundError(`Tidak ada pengisi acara dengan ID ${id}`);
   return result;
 };
 

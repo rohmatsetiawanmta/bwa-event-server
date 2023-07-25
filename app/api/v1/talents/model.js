@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { model, Schema } = mongoose;
+const { model, Schema, Types } = mongoose;
 
-let talentSchema = Schema(
+const talentSchema = Schema(
   {
     name: {
       type: String,
@@ -13,7 +13,7 @@ let talentSchema = Schema(
     },
     // relasi dengan Image
     image: {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'Image',
       required: true,
     },
