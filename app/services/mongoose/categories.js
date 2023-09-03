@@ -1,8 +1,8 @@
 const Categories = require('../../api/v1/categories/model');
 const { NotFoundError, BadRequestError } = require('../../errors');
 
-const getAllCategories = async () => {
-  const result = await Categories.find();
+const getAllCategories = async (req) => {
+  const result = await Categories.find({ organizer: req.user.organizer });
   return result;
 };
 
@@ -11,13 +11,13 @@ const createCategories = async (req) => {
   const check = await Categories.findOne({ name });
   if (check) throw new BadRequestError('Kategori sudah ada');
 
-  const result = await Categories.create({ name });
+  const result = await Categories.create({ name, organizer: req.user.organizer });
   return result;
 };
 
 const getOneCategories = async (req) => {
   const { id } = req.params;
-  const result = await Categories.findOne({ _id: id });
+  const result = await Categories.findOne({ _id: id, organizer: req.user.organizer });
   if (!result) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
 
   return result;
@@ -27,10 +27,10 @@ const updateCategories = async (req) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  const checkCategories = await Categories.findOne({ _id: id });
+  const checkCategories = await Categories.findOne({ _id: id, organizer: req.user.organizer });
   if (!checkCategories) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
 
-  const check = await Categories.findOne({ name, _id: { $ne: id } });
+  const check = await Categories.findOne({ name, organizer: req.user.organizer, _id: { $ne: id } });
   if (check) throw new BadRequestError('Kategori sudah ada');
 
   const result = await Categories.findOneAndUpdate({ _id: id }, { name }, { new: true, runValidators: true });
@@ -41,7 +41,7 @@ const updateCategories = async (req) => {
 const deleteCategories = async (req) => {
   const { id } = req.params;
 
-  const result = await Categories.findOne({ _id: id });
+  const result = await Categories.findOne({ _id: id, organizer: req.user.organizer });
   if (!result) throw new NotFoundError(`Tidak ada kategori dengan ID ${id}`);
 
   await result.deleteOne();
